@@ -1,8 +1,8 @@
-# Insurtech Open Data
+# Open Data for InsurTech
 
-High-quality geospatial data for insurtech is often locked behind expensive APIs, proprietary licenses, or scattered in inconsistent formats.
+High-quality geospatial data for insurtech applications is often constrained by expensive APIs, restrictive licensing, or fragmented and inconsistent formats.
 
-The Geoparse `insurtech-open-data` repository solves this by providing a centralised and standardised collection of open data. We process raw sources into efficient, ready-to-use `Parquet` formats, creating a foundational data layer that is free to use, modify, and distribute. Our goal is to lower the barrier to entry for building location-powered insurtech applications.
+The Geoparse open-data-insurtech repository addresses this challenge by providing a centralised, standardised, and open collection of geospatial datasets.
 
 The project integrates data from the following providers:
 * [Office for National Statistics (ONS)](https://www.ons.gov.uk/)
@@ -16,7 +16,7 @@ The project integrates data from the following providers:
 
 ## DuckDB
 
-This repository uses `DuckDB`, a lightweight, in-process analytical database designed for fast querying of large datasets. Unlike traditional database servers, `DuckDB` runs directly inside your scripts or applications and can query files such as `CSV` and `Parquet` without requiring data to be imported first. It is often described as “SQLite for analytics” due to its simplicity and efficiency for analytical workloads. We use `DuckDB` to export files to the `Parquet` format.
+This repository uses `DuckDB`, a lightweight, in-process analytical database designed for fast querying of large datasets. Unlike traditional database servers, `DuckDB` runs directly inside your scripts or applications and can query files such as `CSV` and `Parquet` without requiring data to be imported first. It is often described as “SQLite for analytics” due to its simplicity and efficiency for analytical workloads. We use DuckDB to process raw datasets and export them into optimised Parquet format for high-performance analytics.
 
 On macOS:
 ```bash
