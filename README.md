@@ -2,7 +2,7 @@
 
 High-quality geospatial data for insurtech applications is often constrained by expensive APIs, restrictive licensing, or fragmented and inconsistent formats.
 
-The Geoparse open-data-insurtech repository addresses this challenge by providing a centralised, standardised, and open collection of geospatial datasets.
+The Geoparse `open-data-insurtech` repository addresses this challenge by providing a centralised, standardised, and open collection of geospatial datasets.
 
 The project integrates data from the following providers:
 * [Office for National Statistics (ONS)](https://www.ons.gov.uk/)
@@ -18,12 +18,18 @@ The project integrates data from the following providers:
 
 This repository uses `DuckDB`, a lightweight, in-process analytical database designed for fast querying of large datasets. Unlike traditional database servers, `DuckDB` runs directly inside your scripts or applications and can query files such as `CSV` and `Parquet` without requiring data to be imported first. It is often described as “SQLite for analytics” due to its simplicity and efficiency for analytical workloads. We use DuckDB to process raw datasets and export them into optimised Parquet format for high-performance analytics.
 
-On macOS:
+### Install DuckDB CLI
+
+#### Linux and macOS
+
 ```bash
-brew update
-brew install duckdb
+curl https://install.duckdb.org | sh
 ```
 
+#### Windows
+
+Follow the official installation guide:  
+https://duckdb.org/install/?platform=windows&environment=cli
 
 ## GDAL
 Before running the scripts in this repository, ensure that [GDAL](https://gdal.org/) is installed on your system. `GDAL` (Geospatial Data Abstraction Library) and `OGR` (OGR Simple Features Library) are essential tools for working with geospatial data. `GDAL` is designed for reading, writing, and processing raster geospatial data, such as satellite images and digital elevation models. It supports a variety of raster formats, including GeoTIFF, JPEG, PNG, and HDF5. On the other hand, `OGR` is specialized in handling vector geospatial data, including points, lines, and polygons, and supports formats like Shapefiles, GeoJSON, KML, PostGIS, and OSM PBF. 
