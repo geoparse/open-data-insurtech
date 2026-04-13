@@ -28,9 +28,14 @@ curl https://install.duckdb.org | sh
 ```
 
 #### Windows
-
 Follow the official installation guide:  
 https://duckdb.org/install/?platform=windows&environment=cli
+
+#### Install DuckDB Spatial Extension
+After installing DuckDB, you need to install the spatial extension to enable geospatial operations during file processing, such as coordinate transformation (EPSG:27700 → EPSG:4326).
+```
+duckdb -c "INSTALL spatial;"
+```
 
 ## GDAL
 Before running the scripts in this repository, ensure that [GDAL](https://gdal.org/) is installed on your system. `GDAL` (Geospatial Data Abstraction Library) and `OGR` (OGR Simple Features Library) are essential tools for working with geospatial data. `GDAL` is designed for reading, writing, and processing raster geospatial data, such as satellite images and digital elevation models. It supports a variety of raster formats, including GeoTIFF, JPEG, PNG, and HDF5. On the other hand, `OGR` is specialized in handling vector geospatial data, including points, lines, and polygons, and supports formats like Shapefiles, GeoJSON, KML, PostGIS, and OSM PBF. 
