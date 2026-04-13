@@ -62,7 +62,10 @@ for csv_file in Data/*.csv; do
             lsoa21cd as lsoa,                -- Lower Layer Super Output Area code
             OA21CD as oa                     -- Output Area code
           FROM read_csv_auto('$csv_file', sample_size=-1)   -- Read entire file for schema detection
-        ) TO '$parquet_file' (FORMAT 'parquet');            -- Output to Parquet format
+        ) TO '$parquet_file' (
+          FORMAT 'parquet',
+          COMPRESSION 'zstd'
+        );                                   -- Output to Parquet format
         "
     fi
 done
