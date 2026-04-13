@@ -20,7 +20,7 @@ cd "$DATA_DIR"  # Change to data directory
 # 2. Download and extract the ONS UPRN directory dataset
 # ------------------------------------------------------------------------------
 echo
-echo "Downloading and Extracting the latest ONS UPRN directory dataset from ArcGIS Hub..."
+echo "Downloading and Extracting the latest ONS UPRN directory dataset..."
 # Download the dataset from ArcGIS Hub
 curl -L https://www.arcgis.com/sharing/rest/content/items/cf1e4c08e78d48e387bcfab837f4e1d0/data -o ons-uprn-directory.zip
 
@@ -60,11 +60,33 @@ echo "Processing all CSV files in Data/ -> $parquet_file"
 
 # Use DuckDB to combine all CSVs and convert to single Parquet
 duckdb -c "
+LOAD spatial;
+
+SET geometry_always_xy = true;
+
 COPY (
+  WITH transformed AS (
+    SELECT
+      UPRN,
+      PCDS,
+      CTRY25CD,
+      RGN25CD,
+      CTY25CD,
+      LAD25CD,
+      PFA23CD,
+      msoa21cd,
+      lsoa21cd,
+      OA21CD,
+      ST_Transform(
+        ST_MakePoint(GRIDGB1E, GRIDGB1N),
+        'EPSG:27700',
+        'EPSG:4326',
+        true
+      ) as geom
+    FROM read_csv_auto('Data/*.csv', sample_size=-1)  -- Read ALL CSV files
+  )
   SELECT
     UPRN as uprn,                    -- Unique Property Reference Number
-    GRIDGB1E as easting,             -- Easting coordinate (OSGB36)
-    GRIDGB1N as northing,            -- Northing coordinate (OSGB36)
     trim(PCDS) as postcode,          -- Postcode string with spaces removed from ends
     CTRY25CD as country,             -- Country code (E92...)
     RGN25CD as region,               -- Region code (E12...)
@@ -73,13 +95,17 @@ COPY (
     PFA23CD as police_force,         -- Police force area code
     msoa21cd as msoa,                -- Middle Layer Super Output Area code
     lsoa21cd as lsoa,                -- Lower Layer Super Output Area code
-    OA21CD as oa                     -- Output Area code
-  FROM read_csv_auto('Data/*.csv', sample_size=-1)   -- Read ALL CSV files
+    OA21CD as oa,                    -- Output Area code
+    ST_Y(geom) as latitude,
+    ST_X(geom) as longitude
+  FROM transformed
+  ORDER BY uprn ASC
 ) TO '$parquet_file' (
   FORMAT 'parquet',
-  COMPRESSION 'ZSTD'                       -- Zstandard compression
+  COMPRESSION 'ZSTD'                 -- Zstandard compression
 );
 "
+
 echo "Conversion complete! Output saved to: $parquet_file"
 echo
 
