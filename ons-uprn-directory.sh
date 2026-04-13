@@ -34,9 +34,28 @@ echo
 # 3. Convert CSV to Parquet using DuckDB
 # ------------------------------------------------------------------------------
 
-# Set output path for single parquet file
-parquet_file="ons-uprn-directory.parquet"
+# Find the first CSV file in Data directory
+first_csv=$(ls Data/ONSUD_*.csv 2>/dev/null | head -n 1)
 
+# Check if any CSV file exists
+if [ -z "$first_csv" ]; then
+    echo "Error: No CSV files found in Data/ directory matching pattern ONSUD_*.csv"
+    exit 1
+fi
+
+# Extract filename from path
+filename=$(basename "$first_csv")
+
+# Parse month, year, and area from filename format: ONSUD_$month_$year_$area.csv
+# Example: ONSUD_DEC_2025_LN.csv
+month=$(echo "$filename" | cut -d'_' -f2)
+year=$(echo "$filename" | cut -d'_' -f3)
+
+# Convert month to camel case (e.g., DEC -> Dec)
+month=$(echo "$month" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')
+
+# Create the output filename: ons-uprn-Dec-2025.parquet
+parquet_file="ons-uprn-${month}-${year}.parquet"
 echo "Processing all CSV files in Data/ -> $parquet_file"
 
 # Use DuckDB to combine all CSVs and convert to single Parquet
@@ -58,12 +77,12 @@ COPY (
   FROM read_csv_auto('Data/*.csv', sample_size=-1)   -- Read ALL CSV files
 ) TO '$parquet_file' (
   FORMAT 'parquet',
-  CODEC 'ZSTD'                       -- Zstandard compression
+  COMPRESSION 'ZSTD'                       -- Zstandard compression
 );
 "
-
 echo "Conversion complete! Output saved to: $parquet_file"
 echo
+
 echo "Compress the original CSV files to save disk space"
 # Check if pigz is available (parallel gzip), otherwise use regular gzip
 if command -v pigz &> /dev/null; then
