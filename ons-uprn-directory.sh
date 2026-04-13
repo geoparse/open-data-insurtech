@@ -22,7 +22,8 @@ cd "$DATA_DIR"  # Change to data directory
 echo
 echo "Downloading and Extracting the latest ONS UPRN directory dataset from ArcGIS Hub..."
 # Download the dataset from ArcGIS Hub
-curl -L https://www.arcgis.com/sharing/rest/content/items/ad7564917fe94ae4aea6487321e36325/data -o ons-uprn-directory.zip
+curl -L https://www.arcgis.com/sharing/rest/content/items/cf1e4c08e78d48e387bcfab837f4e1d0/data -o ons-uprn-directory.zip
+
 # Extract the zip file ($_ represents the last argument from previous command)
 unzip -o $_ "Data/*"
 # Remove the zip file after extraction to save space
