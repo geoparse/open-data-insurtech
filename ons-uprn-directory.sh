@@ -22,7 +22,8 @@ cd "$DATA_DIR"  # Change to data directory
 echo
 echo "Downloading and Extracting the latest ONS UPRN directory dataset from ArcGIS Hub..."
 # Download the dataset from ArcGIS Hub
-curl -L https://www.arcgis.com/sharing/rest/content/items/ad7564917fe94ae4aea6487321e36325/data -o ons-uprn-directory.zip
+curl -L https://www.arcgis.com/sharing/rest/content/items/cf1e4c08e78d48e387bcfab837f4e1d0/data -o ons-uprn-directory.zip
+
 # Extract the zip file ($_ represents the last argument from previous command)
 unzip -o $_ "Data/*"
 # Remove the zip file after extraction to save space
@@ -32,41 +33,56 @@ echo
 # ------------------------------------------------------------------------------
 # 3. Convert CSV to Parquet using DuckDB
 # ------------------------------------------------------------------------------
-# Loop through all CSV files in the Data directory
-for csv_file in Data/*.csv; do
-    # Check if the file exists and is a regular file (not a directory)
-    if [ -f "$csv_file" ]; then
-        # Get the base filename without extension
-        filename=$(basename "$csv_file" .csv)
-        
-        # Set output path for parquet file
-        parquet_file="${filename}.parquet"
-        
-        echo "Processing: $csv_file -> $parquet_file"
-        
-        # Use DuckDB to convert CSV to Parquet
-        duckdb -c "
-        COPY (
-          SELECT
-            UPRN as uprn,                    -- Unique Property Reference Number
-            GRIDGB1E as easting,             -- Easting coordinate (OSGB36)
-            GRIDGB1N as northing,            -- Northing coordinate (OSGB36) 
-            trim(PCDS) as postcode,          -- Postcode string with spaces removed from ends
-            CTRY25CD as country,             -- Country code (E92...)
-            RGN25CD as region,               -- Region code (E12...)
-            CTY25CD as county,               -- County code
-            LAD25CD as local_authority,      -- Local Authority District
-            PFA23CD as police_force,         -- Police force area code
-            msoa21cd as msoa,                -- Middle Layer Super Output Area code
-            lsoa21cd as lsoa,                -- Lower Layer Super Output Area code
-            OA21CD as oa                     -- Output Area code
-          FROM read_csv_auto('$csv_file', sample_size=-1)   -- Read entire file for schema detection
-        ) TO '$parquet_file' (FORMAT 'parquet');            -- Output to Parquet format
-        "
-    fi
-done
 
+# Find the first CSV file in Data directory
+first_csv=$(ls Data/ONSUD_*.csv 2>/dev/null | head -n 1)
+
+# Check if any CSV file exists
+if [ -z "$first_csv" ]; then
+    echo "Error: No CSV files found in Data/ directory matching pattern ONSUD_*.csv"
+    exit 1
+fi
+
+# Extract filename from path
+filename=$(basename "$first_csv")
+
+# Parse month, year, and area from filename format: ONSUD_$month_$year_$area.csv
+# Example: ONSUD_DEC_2025_LN.csv
+month=$(echo "$filename" | cut -d'_' -f2)
+year=$(echo "$filename" | cut -d'_' -f3)
+
+# Convert month to camel case (e.g., DEC -> Dec)
+month=$(echo "$month" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2))}')
+
+# Create the output filename: ons-uprn-Dec-2025.parquet
+parquet_file="ons-uprn-${month}-${year}.parquet"
+echo "Processing all CSV files in Data/ -> $parquet_file"
+
+# Use DuckDB to combine all CSVs and convert to single Parquet
+duckdb -c "
+COPY (
+  SELECT
+    UPRN as uprn,                    -- Unique Property Reference Number
+    GRIDGB1E as easting,             -- Easting coordinate (OSGB36)
+    GRIDGB1N as northing,            -- Northing coordinate (OSGB36)
+    trim(PCDS) as postcode,          -- Postcode string with spaces removed from ends
+    CTRY25CD as country,             -- Country code (E92...)
+    RGN25CD as region,               -- Region code (E12...)
+    CTY25CD as county,               -- County code
+    LAD25CD as local_authority,      -- Local Authority District
+    PFA23CD as police_force,         -- Police force area code
+    msoa21cd as msoa,                -- Middle Layer Super Output Area code
+    lsoa21cd as lsoa,                -- Lower Layer Super Output Area code
+    OA21CD as oa                     -- Output Area code
+  FROM read_csv_auto('Data/*.csv', sample_size=-1)   -- Read ALL CSV files
+) TO '$parquet_file' (
+  FORMAT 'parquet',
+  COMPRESSION 'ZSTD'                       -- Zstandard compression
+);
+"
+echo "Conversion complete! Output saved to: $parquet_file"
 echo
+
 echo "Compress the original CSV files to save disk space"
 # Check if pigz is available (parallel gzip), otherwise use regular gzip
 if command -v pigz &> /dev/null; then

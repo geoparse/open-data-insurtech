@@ -1,3 +1,4 @@
+.
 # Open Data for InsurTech
 
 High-quality geospatial data for insurtech applications is often constrained by expensive APIs, restrictive licensing, or fragmented and inconsistent formats.
@@ -156,11 +157,13 @@ For more information on additional features included in the original `CSV` datas
 <details>
 <summary><h2>ONS UPRN Directory</h2></summary>
 
-Source: [ONS UPRN Directory](https://www.data.gov.uk/dataset/a615e841-c79e-4566-a422-0618faca9634/ons-uprn-directory-october-2025-epoch-121)
+Source: [ONS UPRN Directory](https://geoportal.statistics.gov.uk/datasets/cf1e4c08e78d48e387bcfab837f4e1d0/about)
 
-Unique Property Reference Number (UPRN) is a unique identifier assigned to every addressable location in the United Kingdom, including residential and commercial properties, land parcels, and other structures such as bus shelters or community assets. Managed by Ordnance Survey, the UPRN acts as a consistent reference point across different datasets and systems, ensuring that information from local authorities, government bodies, and private organisations can be accurately linked to the same physical location. Because it is stable over the lifetime of the property or land parcel, the UPRN plays a vital role in data integration, geocoding, property analytics, and service delivery, helping organisations reduce duplication, improve accuracy, and make better evidence-based decisions.
+The **Unique Property Reference Number (UPRN)** is a unique identifier assigned to every addressable location in Great Britain, including buildings, infrastructure and geographic features. It covers over 41 million locations and is maintained by **local authorities**, with national coordination provided by **GeoPlace** and **Ordnance Survey** as part of the **AddressBase** dataset. A UPRN provides a persistent identifier throughout the entire lifecycle of a property, from creation to demolition, and is widely used as the standard reference for property and location data across the UK public sector.
 
-You can download the latest UPRN dataset from [Ordnance Survey Data Hub](https://osdatahub.os.uk/downloads/open/OpenUPRN). Choose the `CSV` format, as it is smaller and faster to process than the `GeoPackage` version. 
+The **ONS UPRN Directory (ONSUD)** relates each UPRN to a range of current statutory administrative, electoral, health and other statistical geographies. The ONSUD is produced by ONS Geography, who provide geographic support to the Office for National Statistics (ONS) and geographic services used by other organisations. The ONSUD is issued every 6 weeks and is designed to complement the Ordnance Survey AddressBase® product.
+
+You can download the latest (December 2025) ONS UPRN Directory dataset from the [Open Geography Portal](https://geoportal.statistics.gov.uk/datasets/cf1e4c08e78d48e387bcfab837f4e1d0/about) on the Office for National Statistics website. Earlier and later releases can be found under the **UPRNs** tab at the top right of the page.
 
 Alternatively, you can run the script directly:
 
@@ -168,8 +171,7 @@ Alternatively, you can run the script directly:
 ./ons-uprn-directory.sh
 
 ```
-This will download, process, and save the latest OS Open UPRN dataset as a `Parquet` file in the `data/os-open-uprn/` directory.
-We convert the dataset to a `Parquet` file (using `DuckDB`) instead of a `GeoParquet` file (using `ogr2ogr`) because reading standard `Parquet` files with `pandas` is significantly faster than loading `GeoParquet` files with `geopandas` in Python.
+This will download, process, and save the latest ONS UPRN Directory dataset as a `Parquet` file in the `data/ons-uprn-directory/` directory.
 </details>
 
 <details>
