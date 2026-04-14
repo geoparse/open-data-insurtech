@@ -177,6 +177,18 @@ Alternatively, you can run the script directly:
 
 ```
 This will download, process, and save the latest ONS UPRN Directory dataset as a `Parquet` file in the `data/ons-uprn-directory/` directory.
+
+The following sample shows the data structure stored in the Parquet file:
+
+| uprn | postcode | country | region | county | local_authority | police_force | msoa | lsoa | country_code | region_code | county_code | local_authority_code | police_force_code | msoa_code | lsoa_code | oa_code | latitude | longitude |
+|------|----------|---------|--------|--------|-----------------|--------------|------|------|--------------|-------------|-------------|----------------------|-------------------|-----------|-----------|---------|----------|-----------|
+| 1 | BS1 5TR | England | South West | (pseudo) England (UA/MD/LB) | Bristol | Avon and Somerset | Bristol 061 | Bristol 061C | E92000001 | E12000009 | E99999999 | E06000023 | E23000036 | E02006952 | E01033909 | E00178046 | 51.45260710824023 | -2.6020684520374964 |
+| 26 | BS11 0YA | England | South West | (pseudo) England (UA/MD/LB) | South Gloucestershire | Avon and Somerset | Bristol 003 | Bristol 003B | E92000001 | E12000009 | E99999999 | E06000025 | E23000036 | E02003014 | E01014498 | E00073219 | 51.52663521970842 | -2.6793564828149075 |
+| 27 | BS11 0YA | England | South West | (pseudo) England (UA/MD/LB) | South Gloucestershire | Avon and Somerset | Bristol 003 | Bristol 003B | E92000001 | E12000009 | E99999999 | E06000025 | E23000036 | E02003014 | E01014498 | E00073219 | 51.52663521970842 | -2.6793564828149075 |
+| 30 | BS10 7RZ | England | South West | (pseudo) England (UA/MD/LB) | South Gloucestershire | Avon and Somerset | Bristol 003 | Bristol 003B | E92000001 | E12000009 | E99999999 | E06000025 | E23000036 | E02003014 | E01014498 | E00073219 | 51.52131886100828 | -2.6528581344042537 |
+| 31 | BS10 7RZ | England | South West | (pseudo) England (UA/MD/LB) | South Gloucestershire | Avon and Somerset | Bristol 003 | Bristol 003B | E92000001 | E12000009 | E99999999 | E06000025 | E23000036 | E02003014 | E01014498 | E00073219 | 51.521237622440935 | -2.6529146245607977 |
+
+
 </details>
 
 <details>
