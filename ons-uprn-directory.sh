@@ -20,12 +20,16 @@ cd "$DATA_DIR"  # Change to data directory
 # 2. Download and extract the ONS UPRN directory dataset
 # ------------------------------------------------------------------------------
 echo
-echo "Downloading and Extracting the latest ONS UPRN directory dataset..."
+echo "Downloading and Extracting ONS UPRN directory dataset..."
+echo "For latest data please check: https://geoportal.statistics.gov.uk/search?q=PRD_ONSUD&sort=Date%20Created%7Ccreated%7Cdesc"
+echo
+echo
 # Download the dataset from ArcGIS Hub
 curl -L https://www.arcgis.com/sharing/rest/content/items/cf1e4c08e78d48e387bcfab837f4e1d0/data -o ons-uprn-directory.zip
 
 # Extract the zip file ($_ represents the last argument from previous command)
 unzip -o $_ "Data/*"
+
 # Remove the zip file after extraction to save space
 rm *.zip
 echo
@@ -56,16 +60,19 @@ month=$(echo "$month" | awk '{print toupper(substr($0,1,1)) tolower(substr($0,2)
 
 # Create the output filename: ons-uprn-Dec-2025.parquet
 parquet_file="ons-uprn-${month}-${year}.parquet"
-echo "Processing all CSV files in Data/ -> $parquet_file"
+echo "Processing ${month} ${year} UPRN dataset in Data/ -> $parquet_file"
 
 # Use DuckDB to combine all CSVs and convert to single Parquet
+area_codes_file="../ons-area-codes/ons-area-codes.parquet"
 duckdb -c "
 LOAD spatial;
-
 SET geometry_always_xy = true;
 
 COPY (
-  WITH transformed AS (
+  WITH area_codes AS (
+    SELECT * FROM read_parquet('${area_codes_file}')
+  ),
+  transformed AS (
     SELECT
       UPRN,
       PCDS,
@@ -83,29 +90,42 @@ COPY (
         'EPSG:4326',
         true
       ) as geom
-    FROM read_csv_auto('Data/*.csv', sample_size=-1)  -- Read ALL CSV files
+    FROM read_csv_auto('Data/*.csv', sample_size=-1)
   )
   SELECT
-    UPRN as uprn,                    -- Unique Property Reference Number
-    trim(PCDS) as postcode,          -- Postcode string with spaces removed from ends
-    CTRY25CD as country,             -- Country code (E92...)
-    RGN25CD as region,               -- Region code (E12...)
-    CTY25CD as county,               -- County code
-    LAD25CD as local_authority,      -- Local Authority District
-    PFA23CD as police_force,         -- Police force area code
-    msoa21cd as msoa,                -- Middle Layer Super Output Area code
-    lsoa21cd as lsoa,                -- Lower Layer Super Output Area code
-    OA21CD as oa,                    -- Output Area code
-    ST_Y(geom) as latitude,
-    ST_X(geom) as longitude
-  FROM transformed
-  ORDER BY uprn ASC
-) TO '$parquet_file' (
+    t.UPRN as uprn,                     -- Unique Property Reference Number
+    trim(t.PCDS) as postcode,           -- Postcode string with spaces removed from ends
+    c.name as country,
+    r.name as region,
+    ct.name as county,
+    la.name as local_authority,
+    pf.name as police_force,
+    m.name as msoa,                     -- Middle Layer Super Output Area
+    l.name as lsoa,                     -- Lower Layer Super Output Area
+    t.CTRY25CD as country_code,
+    t.RGN25CD as region_code,
+    t.CTY25CD as county_code,
+    t.LAD25CD as local_authority_code,
+    t.PFA23CD as police_force_code,
+    t.msoa21cd as msoa_code,
+    t.lsoa21cd as lsoa_code,
+    t.OA21CD as oa_code,                -- Output Area
+    ST_Y(t.geom) as latitude,
+    ST_X(t.geom) as longitude
+  FROM transformed t
+  LEFT JOIN area_codes c ON t.CTRY25CD = c.code
+  LEFT JOIN area_codes r ON t.RGN25CD = r.code
+  LEFT JOIN area_codes ct ON t.CTY25CD = ct.code
+  LEFT JOIN area_codes la ON t.LAD25CD = la.code
+  LEFT JOIN area_codes pf ON t.PFA23CD = pf.code
+  LEFT JOIN area_codes m ON t.msoa21cd = m.code
+  LEFT JOIN area_codes l ON t.lsoa21cd = l.code
+  ORDER BY t.UPRN ASC
+) TO '${parquet_file}' (
   FORMAT 'parquet',
-  COMPRESSION 'ZSTD'                 -- Zstandard compression
+  COMPRESSION 'ZSTD'                    -- Zstandard compression
 );
 "
-
 echo "Conversion complete! Output saved to: $parquet_file"
 echo
 
