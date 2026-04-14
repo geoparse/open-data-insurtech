@@ -177,7 +177,6 @@ Alternatively, you can run the script directly:
 
 ```
 This will download, process, and save the latest ONS UPRN Directory dataset as a `Parquet` file in the `data/ons-uprn-directory/` directory.
-
 The following sample shows the data structure stored in the Parquet file:
 
 | uprn | postcode | country | region | county | local_authority | police_force | msoa | lsoa | country_code | region_code | county_code | local_authority_code | police_force_code | msoa_code | lsoa_code | oa_code | latitude | longitude |
