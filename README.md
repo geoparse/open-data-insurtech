@@ -28,9 +28,14 @@ curl https://install.duckdb.org | sh
 ```
 
 #### Windows
-
 Follow the official installation guide:  
 https://duckdb.org/install/?platform=windows&environment=cli
+
+#### Install DuckDB Spatial Extension
+After installing DuckDB, you need to install the spatial extension to enable geospatial operations during file processing, such as coordinate transformation (EPSG:27700 → EPSG:4326).
+```
+duckdb -c "INSTALL spatial;"
+```
 
 ## GDAL
 Before running the scripts in this repository, ensure that [GDAL](https://gdal.org/) is installed on your system. `GDAL` (Geospatial Data Abstraction Library) and `OGR` (OGR Simple Features Library) are essential tools for working with geospatial data. `GDAL` is designed for reading, writing, and processing raster geospatial data, such as satellite images and digital elevation models. It supports a variety of raster formats, including GeoTIFF, JPEG, PNG, and HDF5. On the other hand, `OGR` is specialized in handling vector geospatial data, including points, lines, and polygons, and supports formats like Shapefiles, GeoJSON, KML, PostGIS, and OSM PBF. 
@@ -157,13 +162,13 @@ For more information on additional features included in the original `CSV` datas
 <details>
 <summary><h2>ONS UPRN Directory</h2></summary>
 
-Source: [ONS UPRN Directory](https://geoportal.statistics.gov.uk/datasets/cf1e4c08e78d48e387bcfab837f4e1d0/about)
+Source: [ONS UPRN Directory](https://geoportal.statistics.gov.uk/search?q=PRD_ONSUD&sort=Date%20Created%7Ccreated%7Cdesc)
 
 The **Unique Property Reference Number (UPRN)** is a unique identifier assigned to every addressable location in Great Britain, including buildings, infrastructure and geographic features. It covers over 41 million locations and is maintained by **local authorities**, with national coordination provided by **GeoPlace** and **Ordnance Survey** as part of the **AddressBase** dataset. A UPRN provides a persistent identifier throughout the entire lifecycle of a property, from creation to demolition, and is widely used as the standard reference for property and location data across the UK public sector.
 
 The **ONS UPRN Directory (ONSUD)** relates each UPRN to a range of current statutory administrative, electoral, health and other statistical geographies. The ONSUD is produced by ONS Geography, who provide geographic support to the Office for National Statistics (ONS) and geographic services used by other organisations. The ONSUD is issued every 6 weeks and is designed to complement the Ordnance Survey AddressBase® product.
 
-You can download the latest (December 2025) ONS UPRN Directory dataset from the [Open Geography Portal](https://geoportal.statistics.gov.uk/datasets/cf1e4c08e78d48e387bcfab837f4e1d0/about) on the Office for National Statistics website. Earlier and later releases can be found under the **UPRNs** tab at the top right of the page.
+You can download the latest ONS UPRN Directory dataset from the [Open Geography Portal](https://geoportal.statistics.gov.uk/search?q=PRD_ONSUD&sort=Date%20Created%7Ccreated%7Cdesc) on the Office for National Statistics website. Earlier and later releases can be found under the **UPRNs** tab at the top right of the page.
 
 Alternatively, you can run the script directly:
 
