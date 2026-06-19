@@ -160,7 +160,7 @@ For more information on additional features included in the original `CSV` datas
 
 
 <details>
-<summary><h2>ONS UPRN Directory</h2></summary>
+<summary><h2>ONS UPRN Directory (Unique Property Reference Number)</h2></summary>
 
 Source: [ONS UPRN Directory](https://geoportal.statistics.gov.uk/search?q=PRD_ONSUD&sort=Date%20Created%7Ccreated%7Cdesc)
 
@@ -329,7 +329,7 @@ The following script automates the process of downloading and converting income 
 
 
 <details>
-<summary><h2>OS Open USRN</h2></summary>
+<summary><h2>OS Open USRN (Unique Street Reference Number) </h2></summary>
 
 Source: [https://osdatahub.os.uk/downloads/open/OpenUSRN](https://osdatahub.os.uk/downloads/open/OpenUSRN)
 
